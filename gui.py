@@ -89,13 +89,18 @@ def show_add_entry_screen(root):
     button_for_generation.pack()
 
 def show_vault_screen(root):
+    def populate_listbox(entries):
+        list_funsies.delete(0, tk.END)
+        ids.clear()
+        for entry in entries:
+            service = entry[0]
+            ids.append(entry[1])
+            list_funsies.insert(tk.END, service)
+
     list_funsies = tk.Listbox(root)
     entries = storage.list_all()
     ids = []
-    for entry in entries:
-        service = entry[0]
-        ids.append(entry[1])
-        list_funsies.insert(tk.END, service)
+    populate_listbox(entries)
 
     list_funsies.pack()
     def on_entry_click(event):
@@ -127,6 +132,24 @@ def show_vault_screen(root):
     addButton = ttk.Button(root, text = "Add another entry", command=add_another_entry)
     addButton.pack()
 
+    def run_search():
+        search_term = search_entry.get()
+        results = storage.search_entries(search_term)
+        populate_listbox(results)
+
+    search_label = ttk.Label(root, text="Search for a service name:")
+    search_label.pack()
+    search_entry = ttk.Entry(root)
+    search_entry.pack()
+
+
+    searchButton = ttk.Button(root, text="Search", command=run_search)
+    searchButton.pack()
+
+    
+
+
+
 def returning_user_screen(root):
     master_password_entry = ttk.Entry(root, show="*")
     master_password_label = ttk.Label(root, text="Insert your master password.")
@@ -147,6 +170,8 @@ def returning_user_screen(root):
 
     master_password_button = ttk.Button(root, text="Submit", command=comparison)
     master_password_button.pack()
+
+        
     
         
 def clear_screen(root):
@@ -194,3 +219,5 @@ def show_new_entry_screen(root):
     # button 2
     button_for_generation = ttk.Button(root, text="Generate Password", command=generate_pass)
     button_for_generation.pack()
+
+    

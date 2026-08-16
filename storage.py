@@ -22,14 +22,15 @@ def add_entry(service_name, encrypted_data, salt):
     conn.close()
     return cursor.lastrowid
 
-def lookup_entry(service_name):
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("SELECT SERVICE_NAME, ENCRYPTED_DATA, SALT, ID FROM ENTRY WHERE SERVICE_NAME = (?)", (service_name,))
-    fetching_data = cursor.fetchall()
-    cursor.close()
+def search_entries(service_name):
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        pattern = f"%{service_name}%"
+        cursor.execute("SELECT SERVICE_NAME, ID FROM ENTRY WHERE SERVICE_NAME LIKE ?", (pattern,))
+        fetch = cursor.fetchall()
+        cursor.close()
     conn.close()
-    return fetching_data
+    return fetch
 
 def list_all():
     conn = sqlite3.connect(DB_PATH)
