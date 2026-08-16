@@ -7,9 +7,9 @@ def request_master_password(master_password):
     first_entry = all_data[0]
     first_entry_id = first_entry[1]
     attempt = storage.lookup_id(first_entry_id) # encrypted_data, salt
-    #key = crypto.derive_key(master_password, attempt[1]) dead code! more dead code! KILL
+    key = crypto.derive_key(master_password, attempt[1]) #im literally a moron this was needed the entire time how did i forget im so dumb
     try:
-         #decrypted = crypto.decrypt_entry(attempt[0], key) dead code lol
+         decrypted = crypto.decrypt_entry(attempt[0], key) 
          return True
     except InvalidToken:
          return False
