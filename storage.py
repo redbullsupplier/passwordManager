@@ -1,14 +1,20 @@
 import sqlite3
+import os # instead of hardcoding the path to the database, maybe i should use this to get the path of the db file regardless of where its located?
+
+app_data_dir = os.getenv("APPDATA")
+app_folder = os.path.join(app_data_dir, "Moha's Password Manager")
+os.makedirs(app_folder, exist_ok=True)
+DB_PATH = os.path.join(app_folder, "teehee.db")
 
 
 def create_table():
-    with sqlite3.connect("teehee.db") as conn:
+    with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
         cursor.execute("CREATE TABLE IF NOT EXISTS ENTRY (service_name TEXT, encrypted_data BLOB, salt BLOB, ID INTEGER PRIMARY KEY);")
     conn.close()
 
 def add_entry(service_name, encrypted_data, salt):
-    conn = sqlite3.connect("teehee.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("INSERT INTO ENTRY (service_name, encrypted_data, salt) VALUES (?, ?, ?)", (service_name, encrypted_data, salt))
     conn.commit()
@@ -17,7 +23,7 @@ def add_entry(service_name, encrypted_data, salt):
     return cursor.lastrowid
 
 def lookup_entry(service_name):
-    conn = sqlite3.connect("teehee.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT SERVICE_NAME, ENCRYPTED_DATA, SALT, ID FROM ENTRY WHERE SERVICE_NAME = (?)", (service_name,))
     fetching_data = cursor.fetchall()
@@ -26,7 +32,7 @@ def lookup_entry(service_name):
     return fetching_data
 
 def list_all():
-    conn = sqlite3.connect("teehee.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT SERVICE_NAME, ID FROM ENTRY")
     fetching_data = cursor.fetchall()
@@ -35,7 +41,7 @@ def list_all():
     return fetching_data
 
 def delete_entry(entry_id):
-    conn = sqlite3.connect("teehee.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("DELETE FROM ENTRY WHERE ID = ?", (entry_id,))
     conn.commit()
@@ -45,7 +51,7 @@ def delete_entry(entry_id):
 
 
 def lookup_id(entry_id):
-    with sqlite3.connect("teehee.db") as conn:
+    with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT encrypted_data, salt FROM ENTRY WHERE ID = ?", (entry_id, ))
         fetch = cursor.fetchone()        
